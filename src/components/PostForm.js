@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import {createPost} from "../actions/postAction";
+import {connect} from "react-redux";
+import PropTypes from 'prop-types';
 
 class PostForm extends Component {
     constructor(props) {
@@ -10,23 +13,18 @@ class PostForm extends Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
+
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
     }
+
     onSubmit(e) {
         e.preventDefault();
         const post = {
             title: this.state.title,
             body: this.state.body
-        }
-
-        fetch('https://jsonplaceholder.typicode.com/posts' , {
-            method: 'POST',
-            headers: {'content-type': 'application/json'},
-            body: JSON.stringify(post)
-        })
-            .then(res => res.json())
-            .then(data => console.log(data))
+        };
+        this.props.createPost(post);
     }
 
     render() {
@@ -36,17 +34,21 @@ class PostForm extends Component {
                 <form onSubmit={this.onSubmit}>
                     <div>
                         <label> Title: </label>
-                        <input type={"text"} name = {"title"} onChange={this.onChange} value={this.state.title} />
+                        <input type={"text"} name={"title"} onChange={this.onChange} value={this.state.title}/>
                     </div>
                     <div>
                         <label> Body: </label>
-                        <textarea name = {"body"} onChange={this.onChange}  value={this.state.body}/>
+                        <textarea name={"body"} onChange={this.onChange} value={this.state.body}/>
                     </div>
-                    <button type = "submit" > Submit </button>
+                    <button type="submit"> Submit</button>
                 </form>
             </div>
         );
     }
 }
 
-export default PostForm;
+PostForm.propTypes = {
+    createPost: PropTypes.func.isRequired
+};
+
+export default connect(null, {createPost}) (PostForm);
